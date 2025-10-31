@@ -1,0 +1,78 @@
+import java.util.Arrays;
+
+public class GeneticAlgorithm {
+    private int populationSize;
+    private int numGenes;
+    private double mutationRate;
+    private FitnessFunction fitnessFunction;
+
+    public GeneticAlgorithm(int populationSize, int numGenes, double mutationRate, FitnessFunction fitnessFunction) {
+        this.populationSize = populationSize;
+        this.numGenes = numGenes;
+        this.mutationRate = mutationRate;
+        this.fitnessFunction = fitnessFunction;
+    }
+
+    public Chromosome run() {
+        Chromosome[] population = initializePopulation();
+        for (int i = 0; i < 100; i++) {
+            population = evolvePopulation(population);
+        }
+        return getFittestChromosome(population);
+    }
+
+    private Chromosome[] initializePopulation() {
+        Chromosome[] population = new Chromosome[populationSize];
+        for (int i = 0; i < populationSize; i++) {
+            population[i] = new Chromosome(numGenes);
+        }
+        return population;
+    }
+
+    private Chromosome[] evolvePopulation(Chromosome[] population) {
+        Chromosome[] newPopulation = new Chromosome[populationSize];
+        for (int i = 0; i < populationSize; i++) {
+            Chromosome parent1 = selectParent(population);
+            Chromosome parent2 = selectParent(population);
+            Chromosome child = crossover(parent1, parent2);
+            mutate(child);
+            newPopulation[i] = child;
+        }
+        return newPopulation;
+    }
+
+    private Chromosome selectParent(Chromosome[] population) {
+        // Simple selection method, can be improved
+        return population[(int) (Math.random() * populationSize)];
+    }
+
+    private Chromosome crossover(Chromosome parent1, Chromosome parent2) {
+        Chromosome child = new Chromosome(numGenes);
+        for (int i = 0; i < numGenes; i++) {
+            if (Math.random() < 0.5) {
+                child.getGenes()[i] = parent1.getGenes()[i];
+            } else {
+                child.getGenes()[i] = parent2.getGenes()[i];
+            }
+        }
+        return child;
+    }
+
+    private void mutate(Chromosome chromosome) {
+        for (int i = 0; i < numGenes; i++) {
+            if (Math.random() < mutationRate) {
+                chromosome.getGenes()[i].setValue(Math.random());
+            }
+        }
+    }
+
+    private Chromosome getFittestChromosome(Chromosome[] population) {
+        Chromosome fittest = population[0];
+        for (int i = 1; i < populationSize; i++) {
+            if (fitnessFunction.calculateFitness(population[i]) > fitnessFunction.calculateFitness(fittest)) {
+                fittest = population[i];
+            }
+        }
+        return fittest;
+    }
+}
