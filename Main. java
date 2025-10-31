@@ -1,0 +1,19 @@
+public class Main {
+    public static void main(String[] args) {
+        FitnessFunction fitnessFunction = new FitnessFunction() {
+            @Override
+            public double calculateFitness(Chromosome chromosome) {
+                // Simple fitness function, can be improved
+                double sum = 0;
+                for (Gene gene : chromosome.getGenes()) {
+                    sum += gene.getValue();
+                }
+                return sum;
+            }
+        };
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(100, 10, 0.1, fitnessFunction);
+        Chromosome fittestChromosome = ga.run();
+        System.out.println("Fittest Chromosome: " + Arrays.toString(fittestChromosome.getGenes()));
+    }
+}
